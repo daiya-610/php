@@ -32,3 +32,36 @@ CREATE TABLE users (
 ```
 INSERT INTO users (username, password) VALUES ('user1', 'password');
 ```
+
+### 1-6-1 usersテーブル内の情報確認
+```
+SELECT * FROM users;
+```
+
+### 1-7 カラムの追加
+```sql:例）emailカラムの追加
+ALTER TABLE users
+ADD email VARCHAR(255) NOT NULL AFTER username;
+```
+
+```
++----+----------+-------+----------+
+| id | username | email | password |
++----+----------+-------+----------+
+|  1 | user1    |       | password |
++----+----------+-------+----------+
+```
+
+### 1-8 カラムに値を追加
+```
+UPDATE users SET email='test@test.com' WHERE username='user1';
+```
+
+```
++----+----------+---------------+----------+
+| id | username | email         | password |
++----+----------+---------------+----------+
+|  1 | user1    | test@test.com | password |
++----+----------+---------------+----------+
+```
+
