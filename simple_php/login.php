@@ -2,21 +2,37 @@
 
 session_start();
 
-// ユーザー名とパスワード
-$valid_username = "user1";
-$valid_password = "password1";
+// データベース接続
+$servername = "localhost"; // データベースのホスト名
+$username = "root"; // データベースのユーザー名
+$password = "password"; // データベースのパスワード
+$dbname = "simple"; // データベース名
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// データベース接続エラーチェック
+if($conn->connect_error) {
+    die("データベース接続エラー：" . $conn->connect_error);
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST["username"];
     $password = $_POST["password"];
 
-    if ($username === $valid_username && $password === $valid_password) {
+    // SQLクエリを構築してユーザー名とパスワードをチェック
+    $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
+    $result = $conn->query($sql);
+
+    // 結果が1行の場合はログイン成功としてセッションを設定
+    if ($result->num_rows == 1) { // データベースから取得した結果が1行のみであることを確認(ユーザー名とパスワードを使用してログインする場合、データベース内には同じユーザー名とパスワードを持つユーザーは1人だけであることが期待されるため。)
         $_SESSION["username"] = $username;
         echo "ログインに成功しました。";
     } else {
         echo "ユーザー名またはパスワードが正しくありません。";
     }
 }
+
+$conn->close();
 
 ?>
 
