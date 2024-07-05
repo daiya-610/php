@@ -1,34 +1,27 @@
 <?php
 
 session_start();
-
-// データベース接続
-$servername = "localhost"; // データベースのホスト名
-$username = "root"; // データベースのユーザー名
-$password = "password"; // データベースのパスワード
-$dbname = "simple"; // データベース名
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// データベース接続エラーチェック
-if($conn->connect_error) {
-    die("データベース接続エラー：" . $conn->connect_error);
-}
+include 'db_config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
     // SQLクエリを構築してメールアドレスとパスワードをチェック
-    $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+    $sql = "SELECT * FROM users WHERE email='$email'";
     $result = $conn->query($sql);
 
     // 結果が1行の場合はログイン成功としてセッションを設定
     if ($result->num_rows == 1) {
-        $_SESSION["email"] = $email;
-        echo "ログインに成功しました。";
+        $row = $result->fetch_assoc();
+        if(password_verify($password, $row['password'])) {
+            $_SESSION["email"] = $email;
+            echo "ログインに成功しました。";
+        } else {
+            echo "メールアドレスまたはパスワードが正しくありません。 - 1";
+        }
     } else {
-        echo "メールアドレスまたはパスワードが正しくありません。";
+        echo "メールアドレスまたはパスワードが正しくありません。 - 2";
     }
 }
 
@@ -52,5 +45,6 @@ $conn->close();
         <input type="password" id="password" name="password"><br><br>
         <input type="submit" value="ログイン">
     </form>
+    <a href="registration_form.php">新規登録</a>
 </body>
 </html>
